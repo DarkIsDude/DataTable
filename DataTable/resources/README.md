@@ -6,11 +6,11 @@ Lors de la création d'une partie d'administration, la plupart des des développ
 Le but de ce framework est de vous permettre, en quelques lignes de code, de générer une table HTML/CSS/Jquery en lien avec votre base de données.
 La modification de la table sera, de manière automatique, répercuté dans la base de données.
 
-### Installation
+# Installation
 
 Coucou
 
-### Création d'une table
+# Création d'une table
 
 This version of the bundle requires Symfony 2.1+. If you are using Symfony
 2.0.x, please use the 1.2.x releases of the bundle.
@@ -34,17 +34,17 @@ Installation is a quick (I promise!) 7 step process:
 6. Import FOSUserBundle routing
 7. Update your database schema
 
-### Autres
+# Autres
 
 ## Prise en compte du type des champs
 
 ## Paramétrer votre table
 
-# Création
+### Création
 
-# Modotification
+### Modotification
 
-# Suppression
+### Suppression
 
 ## Changer la langue
 
