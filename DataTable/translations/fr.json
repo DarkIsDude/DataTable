@@ -1,0 +1,34 @@
+{
+	"sProcessing":     "Traitement...",
+	"sSearch":         "Rechercher",
+	"sLengthMenu":     "Afficher _MENU_ éléments",
+	"sInfoThousands":  " ",
+	"sInfo":           "Affichage des éléments _START_ à _END_ sur _TOTAL_ éléments",
+	"sInfoEmpty":      "Aucun éléments",
+	"sInfoFiltered":   "(filtré de _MAX_ éléments au total)",
+	"sInfoPostFix":    "",
+	"sLoadingRecords": "Chargement...",
+	"sZeroRecords":    "Aucun élément à afficher",
+	"sEmptyTable":     "Aucune donnée disponible dans le tableau",
+	"sDragDrop":	   "Glissez-Déposez une ligne pour la supprimer",
+	"oPaginate": {
+		"sFirst":      "Premier",
+		"sPrevious":   "Précédent",
+		"sNext":       "Suivant",
+		"sLast":       "Dernier"
+	},
+	"oAria": {
+		"sSortAscending":  ": Activer pour trier la colonne par ordre croissant",
+		"sSortDescending": ": Activer pour trier la colonne par ordre décroissant"
+	},
+	"eFunctionUnkown" : "Fonction inconnue",
+	"eMissingPatameters": "Paramètres non trouvés",
+	"eUnserialize": "Impossible de désérialiser",
+	"eUnkonwn": "Erreur inconnu",
+	"eAction": "Impossible d'effectuer cette action",
+	"eQuery": "Erreur dans la requête",
+	"eFindCol": "Impossible de trouver la colonne",
+	"eFile": "Impossible de trouver le fichier",
+	"eFail": "Erreur",
+	"eNone": "Succés"
+}
