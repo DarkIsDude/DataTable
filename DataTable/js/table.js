@@ -112,7 +112,7 @@ $(document).ready(function() {
 		    }, 3000);
 		}
 		
-		this.transfortCase = function (th) {
+		this.transformCase = function (th) {
 			switch (th.attr("type")) {
 				case ("boolean"):
 					if (th.attr("value") == "1" || th.attr("value") == "true")
@@ -218,7 +218,7 @@ $(document).ready(function() {
 				
 				this.$('tr').each(function() {
 					$(this).find("th").each(function() {
-						root.transfortCase($(this));
+						root.transformCase($(this));
 						
 						// Impossible d'éditer les index
 						if ($(this).attr('index') != 'true') {
@@ -240,7 +240,7 @@ $(document).ready(function() {
 								input.bind("keyup", function (e) {
 									if (e.keyCode == 27) {
 										th.empty();
-										root.transfortCase(th);
+										root.transformCase(th);
 									}
 								});
 								
@@ -259,10 +259,11 @@ $(document).ready(function() {
 			if (this.canUpdate) {
 				var root = this;
 				
+				var tr = th.parent();
 				var name = th.attr("dataname");
-				var index = th.parent().attr("index");
+				var index = tr.attr("index");
 				var oldValue = th.attr("value");
-				var newValue = root.getValue(input, th.attr("type"));			
+				var newValue = root.getValue(input, th.attr("type"));
 
 				// Mise à jour
 				var data = {
@@ -278,7 +279,8 @@ $(document).ready(function() {
 			    	if (response.success) {
 				    	th.empty();
 						th.attr("value", response.message);
-						root.transfortCase(th);
+						root.fnUpdate(response.message, tr[0], tr.children().index(th));
+						root.transformCase(th);
 			    	}
 			    	else {
 			    		root.showMessage(input, root.language.eFail, response.message);
@@ -412,8 +414,9 @@ $(document).ready(function() {
 			    	$(this).removeClass("drag");
 			    	
 			    	var index = e.originalEvent.dataTransfer.getData("index");
-			    	var tr = root.find("tr[index='" + index + "']");
-			    	root.deleteRow(tr);
+			    	var tr = root.find("tr[index='" + index + "']").each(function() {
+			    		root.deleteRow($(this));
+			    	});
 			    });
 			    
 			    trash.bind('click', function(e) {
@@ -434,11 +437,10 @@ $(document).ready(function() {
 					  "function" : "delete",
 					  "index" : index,
 				}
-				
+
 				root.send(tr, data, function(response) {
 			    	if (response.success) {
-			    		var rowIndex = root.$('tr').index(tr);
-				    	root.fnDeleteRow(rowIndex);
+			    		root.fnDeleteRow(tr[0]);
 			    	}
 			    	else {
 			    		root.showMessage(tr, root.language.eFail, response.message);

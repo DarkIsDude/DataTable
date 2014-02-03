@@ -18,8 +18,6 @@ La licence est disponible ici: [Lire la licence](https://github.com/doudou34/Dat
 - Sauver l'état avec Cookies
 - Paramétrer le tout
 -- Champ de recherche
--- Tri des colonnes
--- Pagination (plusieurs types de pagination)
 -- Recherche par colonnes avec input ou select
 
 ## Deuxième partie

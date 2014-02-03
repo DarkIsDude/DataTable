@@ -65,14 +65,16 @@ class Table {
 		if (is_dir($directoryPath)) {
 			if ($directory = opendir($directoryPath)) {
 				while (($file = readdir($directory)) !== false) {
-					$filePath = $directoryPath . $file;
-					$update = filemtime($filePath);
-					$date = time();
-					$dif = $date - $update;
-					
-					// Une heure en seconde => 60 * 60 = 3600
-					if ($dif > 3600)
-						unlink($filePath);
+					if ($file != '.' && $file != '..') {
+						$filePath = $directoryPath . $file;
+						$update = filemtime($filePath);
+						$date = time();
+						$dif = $date - $update;
+							
+						// Une heure en seconde => 60 * 60 = 3600
+						if ($dif > 3600 && file_exists($filePath))
+							unlink($filePath);
+					}
 				}
 				closedir($directory);
 			}
