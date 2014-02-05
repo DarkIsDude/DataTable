@@ -888,7 +888,7 @@ class Table {
 		
 		// Add the link beetween the table
 		if ($links != "")
-			$req = $req . " WHERE" . $links;
+			$req = $req . " WHERE " . $links;
 		
 		return $req;
 	}
