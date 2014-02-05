@@ -28,13 +28,14 @@ $(document).ready(function() {
 				root.dataTable({
 					"bPaginate": true,
 			        "bLengthChange": true,
-			        "bFilter": true,
-			        "bSort": true,
 			        "bInfo": true,
 			        "bAutoWidth": true,
 			        "bJQueryUI": true,
+			        "bStateSave": true,
 			        "sPaginationType": "full_numbers",
 			        "oLanguage": json,
+			        "bFilter": true,
+			        "bSort": true,
 			        "fnInitComplete": function(oSettings, jsonUseless) {
 			        	this.name = this.attr("table");
 			        	this.language = json;

@@ -14,13 +14,10 @@ La licence est disponible ici: [Lire la licence](https://github.com/doudou34/Dat
 # A faire
 
 ## Première partie
-- Finir le README
-- Sauver l'état avec Cookies
-- Paramétrer le tout
--- Champ de recherche
--- Recherche par colonnes avec input ou select
 
 ## Deuxième partie
+- Finir le README
+
 - Rapport
 -- Guide du programmeur
 -- L'architecture + les extensions possibles
