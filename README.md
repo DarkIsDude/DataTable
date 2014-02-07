@@ -8,15 +8,16 @@ La modification de la table sera, de manière automatique, répercuté dans la b
 
 # Documentation & Installation
 
-Vous pouvez lire la documentation ici: [Lire la documentation](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/README.md)
+Vous pouvez lire la documentation ici: [Lire la documentation](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/guide.pdf)
 La licence est disponible ici: [Lire la licence](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/LICENCE.md)
 
 # A faire
 
 ## Première partie
+- Trier en naturelle
+- Création du guide
 
 ## Deuxième partie
-- Finir le README
 
 - Rapport
 -- Guide du programmeur

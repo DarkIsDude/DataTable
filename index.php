@@ -17,13 +17,17 @@
 				
 					$table = new DataTable\php\Table();
 					$table->init("user");
+					
 					$table->addColIndex('N', 'id', true, false);
 					$table->addCol('Login', 'login');
 					$table->addCol("Mail", "mail");
 					$table->addCol("Date de naissance", "naissance");
 					$table->addCol("est Grand", "grand");
 					$table->addCol("Peut se connecter", "allowed");
+					
 					$table->addColLinked("Groupe", "user_group", "user_group", "id", "label");
+					$table->getCol("user_group")->addFilter("label", "= 'Admin'");
+					
 					$table->show("./DataTable/");
 				?>
 			</div>

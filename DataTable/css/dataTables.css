@@ -5,7 +5,7 @@
 }
 
 .table-striped tbody tr.selected td, .table-striped tbody tr.selected th {
-	background-color: rgba(141, 192, 219, 0.25);
+	color: #428bca;
 }
 
 /* ********* */
@@ -35,35 +35,22 @@
 /* ********* */
 .dataTables_paginate {
 	float: right;
+	display: inline-block;
+  	padding-left: 0;
+  	margin: 0;
+  	border-radius: 4px;
 }
 
-.dataTables_paginate a.ui-state-disabled {
-	color: #999999;
-  	cursor: not-allowed;
+.dataTables_paginate a {
+	display: inline;
+  	position: relative;
+  	float: left;
+  	padding: 6px 12px;
+  	margin-left: -1px;
+  	line-height: 1.428571429;
+  	text-decoration: none;
   	background-color: #ffffff;
-  	border-color: #dddddd;
-}
-
-.dataTables_paginate {
-  display: inline-block;
-  padding-left: 0;
-  margin: 0;
-  border-radius: 4px;
-}
-
-.dataTables_paginate a {
-  display: inline;
-}
-
-.dataTables_paginate a {
-  position: relative;
-  float: left;
-  padding: 6px 12px;
-  margin-left: -1px;
-  line-height: 1.428571429;
-  text-decoration: none;
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
+  	border: 1px solid #dddddd;
 }
 
 .dataTables_paginate a:first-child {
@@ -73,30 +60,45 @@
 }
 
 .dataTables_paginate a:last-child {
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  	border-top-right-radius: 4px;
+  	border-bottom-right-radius: 4px;
 }
 
 .dataTables_paginate span a:first-child {
-  margin-left: 0;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
+  	margin-left: 0;
+  	border-bottom-left-radius: 0;
+  	border-top-left-radius: 0;
 }
 
 .dataTables_paginate span a:last-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  	border-top-right-radius: 0;
+  	border-bottom-right-radius: 0;
 }
 
 .dataTables_paginate a:hover,
 .dataTables_paginate a:focus {
-  background-color: #eeeeee;
+  	background-color: #eeeeee;
+  	cursor:pointer;
+  	cursor:hand;
 }
 
-[aria-sort=descending] {
-	background-color: rgba(120, 165, 190, 0.25);
+.dataTables_paginate a.ui-state-disabled {
+	color: #999999;
+  	cursor: not-allowed;
+  	background-color: #ffffff;
+  	border-color: #dddddd;
 }
 
-[aria-sort=ascending] {
-	background-color: rgba(141, 192, 219, 0.25);
+.dataTables_paginate span a.ui-state-disabled {
+	z-index: 2;
+	color: #fff;
+	background-color: #428bca;
+	border-color: #428bca;
+	cursor: default;
+}
+
+/* ********* */
+/* ********* */
+[aria-sort=descending], [aria-sort=ascending] {	
+	color: #428bca;
 }

@@ -15,6 +15,13 @@ class Col {
 	public $maxLength = "";
 	
 	/**
+	 * Construct
+	 */
+	public function __construct() {
+		$this->filters = new \ArrayObject();
+	}
+	
+	/**
 	 * Set the type of the column
 	 * @param unknown $type
 	 */

@@ -17,6 +17,10 @@ class Table {
 	public static $UPDATE = 0x04;
 	public static $DELETE = 0x08;
 	
+	// Style of pagination
+	public static $PAGINATION_FULL_NUMBERS = "full_numbers";
+	public static $PAGINATION_NO = "";
+	
 	// Language available
 	public static $FRANCAIS = "fr";
 	public static $ENGLISH = "en";
@@ -27,7 +31,8 @@ class Table {
 	protected static $BDD_PASSWORD = "";
 	protected static $BDD_DATABASE = "pfe";
 	protected static $BDD_DRIVER = "mysql";
-	protected static $LANGUAGE = "fr";
+	protected static $LANGUAGE = "en";
+	protected static $ENCODING = "utf8";
 
 	// Database parameters
 	public $name = "";
@@ -37,12 +42,15 @@ class Table {
 	public $database = "";
 	public $driver = "";
 	public $language = "";
+	public $encoding = "";
 	
 	// Allowed operation
 	public $create = true;
 	public $read = true;
 	public $update = true;
 	public $delete = true;
+	public $sort = true;
+	public $paginate = "";
 	
 	// Private attributs
 	private $connect = null;
@@ -92,9 +100,12 @@ class Table {
 		$this->database = Table::$BDD_DATABASE;
 		$this->driver = Table::$BDD_DRIVER;
 		$this->language = Table::$LANGUAGE;
+		$this->encoding = Table::$ENCODING;
 		
 		$this->cols = new \ArrayObject();
 		$this->filters = new \ArrayObject();
+		
+		$this->paginate = Table::$PAGINATION_FULL_NUMBERS;
 	}
 	
 	/**
@@ -105,9 +116,11 @@ class Table {
 	 * @param $password password to connect (empty if no password)
 	 * @param $database name of the database
 	 * @param $driver driver used to connect (mysql, pgsql, ...)
+	 * @param $language language of the application
+	 * @param $encoding of the database
 	 * @return \DataTable\Table
 	 */
-	public function init($name, $url = "", $login = "", $password = "", $database = "", $driver = "", $language = "") {		
+	public function init($name, $url = "", $login = "", $password = "", $database = "", $driver = "", $language = "", $encoding = "") {		
 		$this->name = $name;
 		
 		if (!empty($url)) $this->url = $url;
@@ -116,6 +129,7 @@ class Table {
 		if (!empty($database)) $this->database = $database;
 		if (!empty($driver)) $this->driver = $driver;
 		if (!empty($language)) $this->language = $language;
+		if (!empty($encoding)) $this->encoding = $encoding;
 		
 		return $this;
 	}
@@ -223,6 +237,22 @@ class Table {
 	}
 	
 	/**
+	 * Set option to enable or disable the sort on table
+	 * @param boolean $sort
+	 */
+	public function canSort($sort) {
+		$this->sort = $sort;
+	}
+	
+	/**
+	 * Set option to enable or disable the pagination and change style on table (see Tabe::$PAGINATION_*)
+	 * @param string $paginate
+	 */
+	public function setPaginateStyle($paginate) {
+		$this->paginate = $paginate;
+	}
+	
+	/**
 	 * Return the filter that has this name
 	 * Return null if there are no filter with this name
 	 * @param $name the name of the filter
@@ -289,7 +319,7 @@ class Table {
 	 * @param $name the name of the col
 	 * @return \DataTable\Col|\DataTable\ColHidden|\DataTable\ColIndex|\DataTable\ColIndexLinked|\DataTable\ColLinked|null
 	 */
-	private function getCol($name) {
+	public function getCol($name) {
 		$c = null;
 		
 		foreach ($this->cols as $col)
@@ -522,7 +552,7 @@ class Table {
 		$print = "";
 		
 		// Begining of the print
-		$print .= '<table identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
+		$print .= '<table sortable="' . $this->sort . '" pagination="' . $this->paginate . '" identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
 		
 			// The head
 			$print .= '<thead>';
@@ -569,7 +599,7 @@ class Table {
 						}
 		
 						if ($col->isVisible()) {// If this column is visible
-							$toPrint .= '<th type="' . $col->type . '" ' . $attrIndex . 'dataName="' . $col->getHeadName() . '" value="' . $col->getBody($data) . '">' . $col->getBody($data) . '</th>';
+							$toPrint .= '<td type="' . $col->type . '" ' . $attrIndex . 'dataName="' . $col->getHeadName() . '" value="' . htmlentities($col->getBody($data)) . '">' . htmlentities($col->getBody($data)) . '</td>';
 						}
 					}
 					
@@ -733,6 +763,7 @@ class Table {
 			try {
 				$this->connect = new \PDO($this->driver . ':host=' . $this->url . ';dbname=' . $this->database . '', $this->login, $this->password);
 				$this->connect->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);// To have an exception if i can't exceute the query
+				$this->connect->exec("SET CHARACTER SET " . $this->encoding);
 			}
 			catch (\Exception $e) {
 				$this->connect = null;

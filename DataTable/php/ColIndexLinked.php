@@ -9,7 +9,7 @@ namespace DataTable\php;
  * @see \DataTable\ColLinked
  * @see \DataTable\ColIndex
  */
-class ColIndexLinked extends Col {
+class ColIndexLinked extends Col {	
 	/**
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::getIndex()

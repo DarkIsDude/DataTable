@@ -24,18 +24,15 @@ $(document).ready(function() {
 			var urlLanguage = this.attr("link") + "translations/" + this.attr("language") + ".json";
 			var root = this;
 			$.getJSON(urlLanguage, null, function(json) {
-				
-				root.dataTable({
-					"bPaginate": true,
+				var options = {
 			        "bLengthChange": true,
 			        "bInfo": true,
 			        "bAutoWidth": true,
 			        "bJQueryUI": true,
 			        "bStateSave": true,
-			        "sPaginationType": "full_numbers",
-			        "oLanguage": json,
+			        
 			        "bFilter": true,
-			        "bSort": true,
+			        "bSort": root.attr("sortable"),
 			        "fnInitComplete": function(oSettings, jsonUseless) {
 			        	this.name = this.attr("table");
 			        	this.language = json;
@@ -61,7 +58,16 @@ $(document).ready(function() {
 							root.send($(this), {"id" : root.attr("identifier"), "function" : "removeSerialized"}, function(response) {}, false);
 						});
 			        }
-			    });
+				};
+				
+				// For pagination
+				options["bPaginate"] = true;
+				if (root.attr("pagination"))
+					options["sPaginationType"] = root.attr("pagination");
+				else
+					options["bPaginate"] = false;
+				
+				root.dataTable(options);
 			});
 			bInitHandedOff = true;
 		}
@@ -113,13 +119,13 @@ $(document).ready(function() {
 		    }, 3000);
 		}
 		
-		this.transformCase = function (th) {
-			switch (th.attr("type")) {
+		this.transformCase = function (td) {
+			switch (td.attr("type")) {
 				case ("boolean"):
-					if (th.attr("value") == "1" || th.attr("value") == "true")
-						th.empty().append($("<i />").addClass("glyphicon glyphicon-check"));
+					if (td.attr("value") == "1" || td.attr("value") == "true")
+						td.empty().append($("<i />").addClass("glyphicon glyphicon-check"));
 					else
-						th.empty().append($("<i />").addClass("glyphicon glyphicon-unchecked"));
+						td.empty().append($("<i />").addClass("glyphicon glyphicon-unchecked"));
 					break;
 				case ("linked"):
 	        	case ("number"):
@@ -130,7 +136,7 @@ $(document).ready(function() {
 	        	case ("datetime"):
 	        	case ("time"):			                    	
 	        	default:
-	        		th.text(th.attr("value"));
+	        		td.text(td.attr("value"));
 	        		break;
 			}
 		}
@@ -218,36 +224,36 @@ $(document).ready(function() {
 				var root = this;
 				
 				this.$('tr').each(function() {
-					$(this).find("th").each(function() {
+					$(this).find("td").each(function() {
 						root.transformCase($(this));
 						
 						// Impossible d'éditer les index
 						if ($(this).attr('index') != 'true') {
 							$(this).bind('dblclick', function() {
 								// Changement de l'affichage
-								var th = $(this);
-								var dataname = th.attr("dataname")
+								var td = $(this);
+								var dataname = td.attr("dataname")
 								var input = root.modal.find("*[dataname='" + dataname + "']").clone(false);
 							    
 								// Mise en place de la valeur
-								root.setValue(input, th.attr("type"), th.attr("value"));
+								root.setValue(input, td.attr("type"), td.attr("value"));
 								
 								// Mise en place de l'élément
-								th.empty();
-								th.append(input);
+								td.empty();
+								td.append(input);
 								input.focus();
 
 								// Si je presse échape
 								input.bind("keyup", function (e) {
 									if (e.keyCode == 27) {
-										th.empty();
-										root.transformCase(th);
+										td.empty();
+										root.transformCase(td);
 									}
 								});
 								
 								// Si je perds le focus
 								input.bind("focusout", function (e) {
-									root.updateRow(th, input);
+									root.updateRow(td, input);
 								});
 							});
 						}
@@ -256,15 +262,15 @@ $(document).ready(function() {
 			}
 		};
 		
-		this.updateRow = function (th, input) {
+		this.updateRow = function (td, input) {
 			if (this.canUpdate) {
 				var root = this;
 				
-				var tr = th.parent();
-				var name = th.attr("dataname");
+				var tr = td.parent();
+				var name = td.attr("dataname");
 				var index = tr.attr("index");
-				var oldValue = th.attr("value");
-				var newValue = root.getValue(input, th.attr("type"));
+				var oldValue = td.attr("value");
+				var newValue = root.getValue(input, td.attr("type"));
 
 				// Mise à jour
 				var data = {
@@ -278,10 +284,10 @@ $(document).ready(function() {
 				
 				root.send(input, data, function(response) {
 			    	if (response.success) {
-				    	th.empty();
-						th.attr("value", response.message);
-						root.fnUpdate(response.message, tr[0], tr.children().index(th));
-						root.transformCase(th);
+				    	td.empty();
+						td.attr("value", response.message);
+						root.fnUpdate(response.message, tr[0], tr.children().index(td));
+						root.transformCase(td);
 			    	}
 			    	else {
 			    		root.showMessage(input, root.language.eFail, response.message);

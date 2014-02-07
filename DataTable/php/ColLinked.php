@@ -12,6 +12,43 @@ class ColLinked extends Col {
 	public $otherTableId = "";
 	public $otherTableName = "";
 	
+	public $filters;
+	
+	/**
+	 * Construct
+	 */
+	public function __construct() {
+		parent::__construct();
+	
+		$this->filters = new \ArrayObject();
+	}
+	
+	/**
+	 * Add a filter to just can select it
+	 * @param string $name
+	 * @param string $condition
+	 */
+	public function addFilter($name, $condition) {
+		$filter = new Filter();
+		$filter->name = $name;
+		$filter->condition = $condition;
+		$this->filters->append($filter);
+	}
+	
+	/**
+	 * Remove all filter with this name
+	 * @param string $name
+	 */
+	public function removeFilter($name) {
+		$i = 0;
+	
+		foreach ($this->filters as $filter)
+			if ($filter->name == $name)
+				$this->filters->offsetUnset($i);
+			else
+				$i++;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::setType()
@@ -57,7 +94,14 @@ class ColLinked extends Col {
 	 * @see \DataTable\Col::getSelectOption()
 	 */
 	public function getSelectOption() {
-		return "SELECT " . $this->otherTableId . ", " . $this->otherTableName . " FROM " . $this->otherTable;
+		$query = "SELECT " . $this->otherTableId . ", " . $this->otherTableName . " FROM " . $this->otherTable;
+		$where = "";
+		
+		foreach ($this->filters as $filter)
+			if (empty($where)) $where = " WHERE " . $filter->name . " " . $filter->condition;
+			else $where .= " AND " . $filter->name . " " . $filter->condition;
+		
+		return $query . $where;
 	}
 		
 	/**
