@@ -73,7 +73,7 @@ class Table {
 		if (is_dir($directoryPath)) {
 			if ($directory = opendir($directoryPath)) {
 				while (($file = readdir($directory)) !== false) {
-					if ($file != '.' && $file != '..') {
+					if ($file != '.' && $file != '..' && $file != 'index.php') {
 						$filePath = $directoryPath . $file;
 						$update = filemtime($filePath);
 						$date = time();
@@ -658,7 +658,7 @@ class Table {
 	 * @param unknown $col
 	 * @return string
 	 */
-	public function showInput($col) {
+	private function showInput($col) {
 		$print = "";
 		
 		switch ($col->type) {
@@ -1052,28 +1052,6 @@ class Table {
 	}
 	
 	/**
-	 * Return the SQL query to delete the row with this index
-	 * Return an array with requete, the requete in SQL and parameters, the parameters of this requete
-	 * Return null is can't create the requete
-	 * @param array $index @see \DataTable\Table::parseIndex
-	 * @return multitype:string multitype:array
-	 */
-	private function deleteSQL($index) {
-		$req = array("requete" => 'DELETE FROM ' . $this->name . ' WHERE ', "parameters" => array());
-		
-		// Construct the WHERE part for the index
-		$reqIndex = '';
-		foreach ($index as $id => $value) {
-			if (!empty($reqIndex)) $reqIndex .= ' AND ';
-			$reqIndex .= $id . ' = :' . $id;
-			$req["parameters"][$id] = $value;
-		}
-		$req["requete"] .= $reqIndex;
-		
-		return $req; 
-	}
-	
-	/**
 	 * Add a new row in the database with this data and this index
 	 * Return an array with success true if the update is done and with message to the error or the new value
 	 * @param array $index the column of this data
@@ -1083,10 +1061,10 @@ class Table {
 	public function createData($json) {
 		$code = array("success" => true, "message" => "");
 		$values = json_decode($json, true);
-		
+	
 		if ($this->create) {
 			$req = $this->createSQL($values);
-			
+				
 			if ($req != null) {
 				if ($req && $this->prepareExecute($req["requete"], $req["parameters"])) {
 					$code["success"] = true;
@@ -1106,8 +1084,30 @@ class Table {
 			$code["success"] = false;
 			$code["message"] = $this->messages["eAction"];
 		}
-		
+	
 		return $code;
+	}
+	
+	/**
+	 * Return the SQL query to delete the row with this index
+	 * Return an array with requete, the requete in SQL and parameters, the parameters of this requete
+	 * Return null is can't create the requete
+	 * @param array $index @see \DataTable\Table::parseIndex
+	 * @return multitype:string multitype:array
+	 */
+	private function deleteSQL($index) {
+		$req = array("requete" => 'DELETE FROM ' . $this->name . ' WHERE ', "parameters" => array());
+		
+		// Construct the WHERE part for the index
+		$reqIndex = '';
+		foreach ($index as $id => $value) {
+			if (!empty($reqIndex)) $reqIndex .= ' AND ';
+			$reqIndex .= $id . ' = :' . $id;
+			$req["parameters"][$id] = $value;
+		}
+		$req["requete"] .= $reqIndex;
+		
+		return $req; 
 	}
 	
 	/**

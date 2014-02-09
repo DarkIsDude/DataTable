@@ -9,13 +9,13 @@ La modification de la table sera, de manière automatique, répercuté dans la b
 # Documentation & Installation
 
 Vous pouvez lire la documentation ici: [Lire la documentation](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/guide.pdf)
+Un document expliquant l'architecture et la création: [Lire la documentation](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/report.pdf)
 La licence est disponible ici: [Lire la licence](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/LICENCE.md)
 
 # A faire
 
 ## Première partie
 - Trier en naturelle
-- Création du guide
 
 ## Deuxième partie
 

@@ -9,7 +9,7 @@
 	<body>
 		<div class="container">
 			<div class="row">
-				<h1>Test du PFE avec affichage en bootstrap</h1>
+				<h1>Test de DataTable</h1>
 			</div>
 			<div class="row">
 				<?php
