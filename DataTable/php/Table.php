@@ -396,6 +396,39 @@ class Table {
 	}
 	
 	/**
+	 * Add a col that is not show, but with a default value when you create a new row
+	 * @param $label the label of the col
+	 * @param $name the name in the database of the col
+	 * @param $default the default value
+	 */
+	public function addColHidden($label, $name, $default) {
+		$col = $this->getCol($name);
+	
+		if ($col == null) {
+			$col = new ColHidden();
+			$col->table = $this;
+			$col->name = $name;
+			$col->label = $label;
+			$col->default = $default;
+			$this->cols->append($col);
+		}
+		else if ($col instanceof ColHidden) {
+			$col->table = $this;
+			$col->label = $label;
+			$col->default = $default;
+		}
+		else {
+			$this->removeCol($name);
+			$col = new ColHidden();
+			$col->table = $this;
+			$col->name = $name;
+			$col->label = $label;
+			$col->default = $default;
+			$this->cols->append($col);
+		}
+	}
+	
+	/**
 	 * Add a col linked with antoher table
 	 * For example, to link the table with the table user to show the login
 	 * @param $label the label of the col
@@ -433,39 +466,6 @@ class Table {
 			$col->otherTable = $otherTable;
 			$col->otherTableId = $otherIndex;
 			$col->otherTableName = $otherName;
-			$this->cols->append($col);
-		}
-	}
-	
-	/**
-	 * Add a col that is not show, but with a default value when you create a new row
-	 * @param $label the label of the col
-	 * @param $name the name in the database of the col
-	 * @param $default the default value
-	 */
-	public function addColHidden($label, $name, $default) {
-		$col = $this->getCol($name);
-	
-		if ($col == null) {
-			$col = new ColHidden();
-			$col->table = $this;
-			$col->name = $name;
-			$col->label = $label;
-			$col->default = $default;
-			$this->cols->append($col);
-		}
-		else if ($col instanceof ColHidden) {
-			$col->table = $this;
-			$col->label = $label;
-			$col->default = $default;
-		}
-		else {
-			$this->removeCol($name);
-			$col = new ColHidden();
-			$col->table = $this;
-			$col->name = $name;
-			$col->label = $label;
-			$col->default = $default;
 			$this->cols->append($col);
 		}
 	}
