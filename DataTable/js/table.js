@@ -19,7 +19,9 @@ $(document).ready(function() {
 		
 		// **************************
 		// ****** FUNCTION INIT *****
-		// **************************		
+		// **************************
+		
+		// Init everithing
 		this.init = function () {
 			var urlLanguage = this.attr("link") + "translations/" + this.attr("language") + ".json";
 			var root = this;
@@ -72,6 +74,7 @@ $(document).ready(function() {
 			bInitHandedOff = true;
 		}
 
+		// Init the div
 		this.initParent = function () {
 			// Ajout de l'icone de chargement
 			var pr = $("<img />").addClass("pull-right preloader").attr("src", this.attr("link") + "images/loading.gif").attr('id', 'preloader' + this.name);
@@ -84,6 +87,8 @@ $(document).ready(function() {
 		// **************************
 		// ****** FUNCTION OTHER ****
 		// **************************
+		
+		// Set bootstrap style
 		this.setBootstrap = function () {
 			this.addClass('table table-hover table-bordered table-striped');
 			
@@ -105,6 +110,7 @@ $(document).ready(function() {
 			});
 		}
 		
+		// Display a message (thanks to bootstrap) on this element
 		this.showMessage = function (element, title, content) {
 			element.popover({
 				"offset": 10,
@@ -119,6 +125,7 @@ $(document).ready(function() {
 		    }, 3000);
 		}
 		
+		// Display the correct value in the td (thanks to the value attribute)
 		this.transformCase = function (td) {
 			switch (td.attr("type")) {
 				case ("boolean"):
@@ -141,6 +148,7 @@ $(document).ready(function() {
 			}
 		}
 		
+		// Send to ajax.php a query
 		this.send = function (element, data, callback, async) {
 			if (typeof async === "undefined" || async === null) 
 				async = true;
@@ -166,6 +174,7 @@ $(document).ready(function() {
 			});	
 		}
 		
+		// Get value of the input
 		this.getValue = function (input, type) {
 			var value = "";
 			
@@ -192,6 +201,7 @@ $(document).ready(function() {
 			return value;
 		}
 		
+		// Set value of input
 		this.setValue = function (input, type, value) {
 			switch (type) {
 				case ("boolean"):

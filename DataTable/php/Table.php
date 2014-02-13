@@ -54,6 +54,7 @@ class Table {
 	
 	// Private attributs
 	private $connect = null;
+	private $concreteDriver = null;
 	private $error = "";
 	private $link = "";
 	private $idSerialize = null;
@@ -534,6 +535,8 @@ class Table {
 	 */
 	public function show($link) {
 		$this->serializeTable(false);
+		$this->setConcreteDriver();
+		
 		$this->link = $link;
 		$this->messages = json_decode(file_get_contents($this->link . "translations/" . $this->language . ".json"), true);
 
@@ -805,27 +808,35 @@ class Table {
 	}
 	
 	/**
-	 * Pour chaque colonne, mets en place son type, sa longueur maximale
+	 * Create the concrete class driver for this table
+	 */
+	private function setConcreteDriver() {
+		if ($this->concreteDriver == null) {
+			switch ($this->driver) {
+				case "pgsql":
+					$this->concreteDriver = new TableDriverPGSQL();
+					break;
+				default:
+					$this->concreteDriver = new TableDriverDefault();
+					break;
+			}
+			
+			$this->concreteDriver->setTable($this);
+		}
+	}
+	
+	/**
+	 * For each column, set his type
 	 */
 	private function setType() {
-		$driver = null;
-		switch ($this->driver) {
-			case "pgsql":
-				$driver = new TableDriverPGSQL();
-				break;
-			default:
-				$driver = new TableDriverDefault();
-				break;
-		}
-		
-		$driver->setTable($this);
-		$requete = $driver->getSQL();
+		$this->setConcreteDriver();
+		$requete = $this->concreteDriver->getSQL();
 		$response = $this->prepareExecute($requete['requete'], $requete['parameters']);
 		
 		foreach ($response as $aInfo) {
-			$columnName = $driver->getColumnName($aInfo);
-			$dataType = $driver->getColumnType($aInfo);
-			$maxLength = $driver->getColumnLength($aInfo);
+			$columnName = $this->concreteDriver->getColumnName($aInfo);
+			$dataType = $this->concreteDriver->getColumnType($aInfo);
+			$maxLength = $this->concreteDriver->getColumnLength($aInfo);
 		
 			$col = $this->getCol($columnName);
 			if ($col != null) {

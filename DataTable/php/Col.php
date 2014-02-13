@@ -18,7 +18,7 @@ class Col {
 	 * Construct
 	 */
 	public function __construct() {
-		$this->filters = new \ArrayObject();
+		
 	}
 	
 	/**

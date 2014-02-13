@@ -62,6 +62,10 @@ if (isset($_POST['id']) && isset($_POST['function'])) {
 			$code["message"] = $table->messages["eUnserialize"];
 		}
 	}
+    else {
+        $code["success"] = false;
+        $code["message"] = "File not found. Maybe a right’s problem";
+    }
 }
 
 print json_encode($code);
