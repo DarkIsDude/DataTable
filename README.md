@@ -22,11 +22,10 @@ La licence est disponible ici: [Lire la licence](https://github.com/doudou34/Dat
 
 ## Deuxième partie
 
-- Rapport
--- Création: 4 à faire
--- Utilisation: 3 à faire
-
 - Soutenance
+
 -- Départ avec une démonstration
+
 -- 15 min de soutenance et 10 min de questions
+
 -- On commencera du résultat pour ensuite l'expliquer
