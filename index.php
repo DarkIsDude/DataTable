@@ -16,17 +16,10 @@
 					require_once('./DataTable/php/include.php');
 				
 					$table = new DataTable\php\Table();
-					$table->init("user");
+					$table->init("user_user_group");
 					
-					$table->addColIndex('N', 'id', true, false);
-					$table->addCol('Login', 'login');
-					$table->addCol("Mail", "mail");
-					$table->addCol("Date de naissance", "naissance");
-					$table->addCol("est Grand", "grand");
-					$table->addCol("Peut se connecter", "allowed");
-					
-					$table->addColLinked("Groupe", "user_group", "user_group", "id", "label");
-					$table->getCol("user_group")->addFilter("label", "= 'Admin'");
+					$table->addColIndexLinked("Utilisateur", "user_id", "studio_user", "id", "username");
+					$table->addColIndexLinked("Groupe", "group_id", "user_group", "id", "name");
 					
 					$table->show("./DataTable/");
 				?>

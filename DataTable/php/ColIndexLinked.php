@@ -2,6 +2,7 @@
 
 namespace DataTable\php;
 
+use DataTable\php\ColLinked;
 /**
  * A simple col that is link and that is an index
  * @author doudou
@@ -9,7 +10,7 @@ namespace DataTable\php;
  * @see \DataTable\ColLinked
  * @see \DataTable\ColIndex
  */
-class ColIndexLinked extends Col {	
+class ColIndexLinked extends ColLinked {	
 	/**
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::getIndex()

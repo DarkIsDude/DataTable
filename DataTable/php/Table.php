@@ -29,7 +29,7 @@ class Table {
 	protected static $BDD_URL = "127.0.0.1";
 	protected static $BDD_LOGIN = "root";
 	protected static $BDD_PASSWORD = "";
-	protected static $BDD_DATABASE = "pfe";
+	protected static $BDD_DATABASE = "studio";
 	protected static $BDD_DRIVER = "mysql";
 	protected static $LANGUAGE = "en";
 	protected static $ENCODING = "utf8";
