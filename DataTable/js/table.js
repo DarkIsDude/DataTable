@@ -44,8 +44,10 @@ $(document).ready(function() {
 						this.canUpdate = this.attr("update");
 						this.canDelete = this.attr("delete");
 						this.canCreate = this.attr("create");
+						this.canExtension = this.attr("extension")
 						
 						this.initParent();
+						this.initDragDrop();
 						this.setBootstrap();
 						
 						if (this.canUpdate)
@@ -54,6 +56,8 @@ $(document).ready(function() {
 							this.deletable();
 						if (this.canCreate)
 							this.creatable();
+						if (this.canExtension)
+							this.extension();
 						
 						// When I leave the page
 						$(window).unload("beforeunload", function() {
@@ -79,9 +83,27 @@ $(document).ready(function() {
 			// Ajout de l'icone de chargement
 			var pr = $("<img />").addClass("pull-right preloader").attr("src", this.attr("link") + "images/loading.gif").attr('id', 'preloader' + this.name);
 			pr.attr("width", "20px");
-			$(".fg-toolbar .dataTables_filter").after(pr);
+			this.div.find(".fg-toolbar .dataTables_filter").after(pr);
 			
 			this.preloader = pr;
+		}
+		
+		this.initDragDrop = function () {
+			// Application du draggable
+			this.$('tr').each(function () {
+				$(this).attr("draggable", true);
+				
+				$(this).bind("dragstart", function (e) {
+					e.originalEvent.dataTransfer.setData("index", $(this).attr("index"));
+				});
+				
+				$(this).bind("click", function (e) {
+					if ($(this).hasClass("selected"))
+						$(this).removeClass("selected");
+					else
+						$(this).addClass("selected");
+				});
+			});
 		}
 		
 		// **************************
@@ -288,7 +310,6 @@ $(document).ready(function() {
 					  "function" : "update",
 					  "name" : name,
 					  "index" : index,
-					  "oldValue" : oldValue,
 					  "newValue" : newValue
 				}
 				
@@ -298,6 +319,7 @@ $(document).ready(function() {
 						td.attr("value", response.message);
 						root.fnUpdate(response.message, tr[0], tr.children().index(td));
 						root.transformCase(td);
+						root.trigger("fnUpdate", td);
 			    	}
 			    	else {
 			    		root.showMessage(input, root.language.eFail, response.message);
@@ -318,7 +340,7 @@ $(document).ready(function() {
 				root.addButton = $("<button />").addClass("btn btn-default pull-right addLine");
 				var icon = $("<i />").addClass("glyphicon glyphicon-plus");
 				root.addButton.append(icon);
-				$(".fg-toolbar .dataTables_filter").after(root.addButton);
+				this.div.find(".fg-toolbar .dataTables_filter").after(root.addButton);
 				
 				// Affichage de la modal
 				root.addButton.bind("click", function() {
@@ -361,7 +383,7 @@ $(document).ready(function() {
 			    	if (response.success) {
 			    		root.div.after(response.message);
 			    		var elem = root.div.next();
-			    		
+			    		root.trigger("fnAdd", objetJSON);
 			    		root.div.remove();
 			    		elem.dataTablePlus();
 			    	}
@@ -388,23 +410,7 @@ $(document).ready(function() {
 				trash.attr("data-placement", "bottom");
 				trash.attr("data-original-title", root.language.sDragDrop);
 				trash.tooltip();
-				$(".fg-toolbar .dataTables_filter").after(trash);
-				
-				// Application du draggable
-				this.$('tr').each(function () {
-					$(this).attr("draggable", true);
-					
-					$(this).bind("dragstart", function (e) {
-						e.originalEvent.dataTransfer.setData("index", $(this).attr("index"));
-					});
-					
-					$(this).bind("click", function (e) {
-						if ($(this).hasClass("selected"))
-							$(this).removeClass("selected");
-						else
-							$(this).addClass("selected");
-					});
-				});
+				this.div.find(".fg-toolbar .dataTables_filter").after(trash);
 				
 				// Liaison des évnements
 				trash.bind('dragenter', function(e) {
@@ -458,11 +464,68 @@ $(document).ready(function() {
 				root.send(tr, data, function(response) {
 			    	if (response.success) {
 			    		root.fnDeleteRow(tr[0]);
+			    		root.trigger("fnRemove", index);
 			    	}
 			    	else {
 			    		root.showMessage(tr, root.language.eFail, response.message);
 			    	}
 				});
+			}
+		}
+		
+		// *****************************
+		// ****** FUNCTION EXTENSION ***
+		// *****************************
+		this.extension = function() {
+			if (this.canExtension) {
+				var root = this;
+				
+				// Ajout de l'image pour suppression
+				var option = $("<button />").addClass("btn btn-default pull-right optionLine");
+				var icon = $("<i />").addClass("glyphicon glyphicon-new-window");
+				option.append(icon);
+				option.attr("droppable", true);
+				option.attr("data-toggle", "tooltip");
+				option.attr("data-placement", "bottom");
+				option.attr("data-original-title", root.language.sDragDropOption);
+				option.tooltip();
+				this.div.find(".fg-toolbar .dataTables_filter").after(option);
+				
+				// Liaison des évnements
+				option.bind('dragenter', function(e) {
+					e.stopPropagation();
+			    	e.preventDefault();
+					$(this).addClass("drag");
+				});
+				
+				option.bind('dragover', function(e) {
+			    	e.stopPropagation();
+			    	e.preventDefault();
+			    	$(this).addClass("drag");
+			    });
+			    
+				option.bind('dragleave', function(e) {
+			    	e.stopPropagation();
+			    	e.preventDefault();
+			    	$(this).removeClass("drag");
+			    });
+			    
+				option.bind('drop', function(e) {
+			    	e.stopPropagation();
+			    	e.preventDefault();
+			    	$(this).removeClass("drag");
+			    	
+			    	var index = e.originalEvent.dataTransfer.getData("index");
+			    	var tr = root.find("tr[index='" + index + "']").each(function() {
+			    		root.trigger("fnExtension", $(this));
+			    	});
+			    });
+			    
+				option.bind('click', function(e) {
+			    	root.$('tr.selected').each(function () {
+			    		root.trigger("fnExtension", $(this));
+			    	});
+			    });
 			}
 		}
 		

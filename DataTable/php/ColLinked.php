@@ -14,6 +14,8 @@ class ColLinked extends Col {
 	
 	public $filters;
 	
+	private $allColumn = array();
+	
 	/**
 	 * Construct
 	 */
@@ -21,6 +23,18 @@ class ColLinked extends Col {
 		parent::__construct();
 	
 		$this->filters = new \ArrayObject();
+	}
+	
+	/**
+	 * Save into $allColumn the real value of otherTableName
+	 */
+	private function parseName() {
+		if (count($this->allColumn) == 0) {
+			preg_match_all("#\*([\d|\w]+)\*#", $this->otherTableName, $columns, PREG_SET_ORDER);
+			
+			foreach($columns as $column)
+				$this->allColumn[] = $column[1];
+		}
 	}
 	
 	/**
@@ -58,11 +72,30 @@ class ColLinked extends Col {
 	}
 	
 	/**
+	 * Return the index of this data
+	 * @param unknown $data
+	 * @param string $force
+	 * @return string
+	 */
+	public function getIndex($data, $force = false) {
+		if ($force)
+			return $data[$this->otherTableId];
+		else
+			return '';
+	}
+	
+	/**
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::getBody()
 	 */
 	public function getBody($data) {
-		return $data[$this->otherTableName];
+		$this->parseName();
+		$string = substr($this->otherTableName, 0);
+		
+		foreach ($this->allColumn as $column)
+			$string = str_replace("*" . $column . "*", $data[$column], $string);
+		
+		return $string;
 	}
 	
 	/**
@@ -78,7 +111,13 @@ class ColLinked extends Col {
 	 * @see \DataTable\Col::getField()
 	 */
 	public function getField() {
-		return $this->table->name . "." . $this->name . ", " . $this->otherTable . "." . $this->otherTableName;
+		$this->parseName();
+		$field = $this->table->name . "." . $this->name;
+		
+		foreach ($this->allColumn as $column)
+			$field .= ", " . $this->otherTable . "." . $column;
+		
+		return  $field;
 	}
 	
 	/**
@@ -94,9 +133,12 @@ class ColLinked extends Col {
 	 * @see \DataTable\Col::getSelectOption()
 	 */
 	public function getSelectOption() {
-		$query = "SELECT " . $this->otherTableId . ", " . $this->otherTableName . " FROM " . $this->otherTable;
-		$where = "";
-		
+		$query = "SELECT " . $this->otherTableId;
+		foreach ($this->allColumn as $column)
+			$query .= ", " . $column;
+		$query .= " FROM " . $this->otherTable;
+
+		$where = "";		
 		foreach ($this->filters as $filter)
 			if (empty($where)) $where = " WHERE " . $filter->name . " " . $filter->condition;
 			else $where .= " AND " . $filter->name . " " . $filter->condition;
@@ -109,14 +151,15 @@ class ColLinked extends Col {
 	 * @see \DataTable\Col::getValue()
 	 */
 	public function getValue($index) {
+		$this->parseName();
 		$req = array(
 				"requete" => "",
 				"parameters" => array());
 		// Construct the basic select
-		$req["requete"] =
-		"SELECT " . $this->otherTable . "." . $this->otherTableName . "
-				FROM " . $this->table->name . ", " . $this->otherTable . "
-				WHERE ";
+		$req["requete"] .= "SELECT " . $this->otherTable . "." . $this->otherTableId;
+		foreach ($this->allColumn as $column)
+			$req["requete"] .= ", " . $this->otherTable . "." . $column;
+		$req["requete"] .= " FROM " . $this->table->name . ", " . $this->otherTable . " WHERE ";
 	
 		// Construct the WHERE part for the index
 		$reqIndex = '';

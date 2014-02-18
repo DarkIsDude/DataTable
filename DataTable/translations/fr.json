@@ -11,6 +11,7 @@
 	"sZeroRecords":    "Aucun élément à afficher",
 	"sEmptyTable":     "Aucune donnée disponible dans le tableau",
 	"sDragDrop":	   "Glissez-Déposez une ligne pour la supprimer",
+	"sDragDropOption": "Glissez-Déposez une ligne pour déclencher l'action",
 	"oPaginate": {
 		"sFirst":      "Premier",
 		"sPrevious":   "Précédent",

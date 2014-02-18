@@ -15,8 +15,11 @@ class ColIndexLinked extends ColLinked {
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::getIndex()
 	 */
-	public function getIndex($data) {
-		return $data[$this->name];
+	public function getIndex($data, $force = false) {
+		if ($force)
+			return parent::getIndex($data, $force);
+		else
+			return $data[$this->name];
 	}
 	
 	/**

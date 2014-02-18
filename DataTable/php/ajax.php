@@ -16,8 +16,8 @@ if (isset($_POST['id']) && isset($_POST['function'])) {
 		if ($table instanceof DataTable\php\Table) {
 			switch ($_POST['function']) {
 				case 'update':
-					if (isset($_POST['name']) && isset($_POST['index']) && isset($_POST['oldValue']) && isset($_POST['newValue'])) {
-						$code = $table->updateData($_POST['name'], $_POST['index'], $_POST['oldValue'], $_POST['newValue']);
+					if (isset($_POST['name']) && isset($_POST['index']) && isset($_POST['newValue'])) {
+						$code = $table->updateData($_POST['name'], $_POST['index'], $_POST['newValue']);
 						$serialize = true;
 					}
 					else {

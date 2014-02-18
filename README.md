@@ -18,14 +18,14 @@ La licence est disponible ici: [Lire la licence](https://github.com/doudou34/Dat
 
 ## Première partie
 
-- Trier en naturelle
+- Rajouter une fonction addAllCols qui fait de l'introspection sur la table, sans paramètre elle ajoute toute les colonnes de la table
 
 ## Deuxième partie
 
+- Rapport
+
+-- Fin et relecture
+
 - Soutenance
 
--- Départ avec une démonstration
-
 -- 15 min de soutenance et 10 min de questions
-
--- On commencera du résultat pour ensuite l'expliquer

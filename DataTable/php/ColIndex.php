@@ -43,7 +43,7 @@ class ColIndex extends Col {
 	 * (non-PHPdoc)
 	 * @see \DataTable\Col::getIndex()
 	 */
-	public function getIndex($data) {
+	public function getIndex($data, $force = false) {
 		return $data[$this->name];
 	}
 	

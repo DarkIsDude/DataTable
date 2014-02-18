@@ -29,7 +29,7 @@ class Table {
 	protected static $BDD_URL = "127.0.0.1";
 	protected static $BDD_LOGIN = "root";
 	protected static $BDD_PASSWORD = "";
-	protected static $BDD_DATABASE = "studio";
+	protected static $BDD_DATABASE = "pfe";
 	protected static $BDD_DRIVER = "mysql";
 	protected static $LANGUAGE = "en";
 	protected static $ENCODING = "utf8";
@@ -50,6 +50,7 @@ class Table {
 	public $update = true;
 	public $delete = true;
 	public $sort = true;
+	public $extension = false;
 	public $paginate = "";
 	
 	// Private attributs
@@ -243,6 +244,14 @@ class Table {
 	 */
 	public function canSort($sort) {
 		$this->sort = $sort;
+	}
+	
+	/**
+	 * Set option to enable or disable the extension on table
+	 * @param boolean $extension
+	 */
+	public function canExtension($extension) {
+		$this->extension = $extension;
 	}
 	
 	/**
@@ -555,7 +564,7 @@ class Table {
 		$print = "";
 		
 		// Begining of the print
-		$print .= '<table sortable="' . $this->sort . '" pagination="' . $this->paginate . '" identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
+		$print .= '<table extension="' . $this->extension . ' sortable="' . $this->sort . '" pagination="' . $this->paginate . '" identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
 		
 			// The head
 			$print .= '<thead>';
@@ -668,11 +677,11 @@ class Table {
 			case "linked":
 				$options = $this->prepareExecute($col->getSelectOption(), array());
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<select dataname="' . $col->name . '" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<select dataname="' . $col->getHeadName() . '" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				foreach ($options as $option)
-					$print .= "<option value=" . $option[0] . ">" . $option[1] . "</option>";
+					$print .= "<option value=" . $col->getIndex($option, true) . ">" . htmlentities($col->getBody($option)) . "</option>";
 				$print .= '</select>';
 				$print .= '</div>';
 				$print .= '</div>';
@@ -682,7 +691,7 @@ class Table {
 				$print .= '<div class="col-sm-offset-2 col-sm-10">';
 				$print .= '<div class="checkbox">';
 				$print .= '<label>';
-				$print .= '<input dataname="' . $col->name . '" type="checkbox" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">' . $col->label . '';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="checkbox" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">' . $col->label . '';
 				$print .= '</label>';
 				$print .= '</div>';
 				$print .= '</div>';
@@ -690,65 +699,65 @@ class Table {
 				break;
 			case "text":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<textarea rows="3" dataname="' . $col->name . '" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '"></textarea>';
+				$print .= '<textarea rows="3" dataname="' . $col->getHeadName() . '" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '"></textarea>';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "varchar":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="text" class="form-control" id="' . $this->name . $col->name . '" maxlength="' . $col->maxLength . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="text" class="form-control" id="' . $this->name . $col->getHeadName() . '" maxlength="' . $col->maxLength . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "number":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="number" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="number" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "double":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="number" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="number" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "date":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="date" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="date" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "datetime":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="datetime-local" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="datetime-local" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			case "time":
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" type="time" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" type="time" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 				break;
 			default:
 				$print .= '<div class="form-group">';
-				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->name . '">' . $col->label. '</label>';
+				$print .= '<label class="col-sm-2 control-label" for="' . $this->name . $col->getHeadName() . '">' . $col->label. '</label>';
 				$print .= '<div class="col-sm-10">';
-				$print .= '<input dataname="' . $col->name . '" class="form-control" id="' . $this->name . $col->name . '" typeData="' . $col->type . '">';
+				$print .= '<input dataname="' . $col->getHeadName() . '" class="form-control" id="' . $this->name . $col->getHeadName() . '" typeData="' . $col->type . '">';
 				$print .= '</div>';
 				$print .= '</div>';
 		}
@@ -866,6 +875,10 @@ class Table {
 							$col->setType("number");
 							$col->maxLength = $maxLength;
 						}
+						else if (strpos($dataType, 'text') !== false) {
+							$col->setType("text");
+							$col->maxLength = "";
+						}
 						else {
 							$col->setType("");
 							$col->maxLength = 0;
@@ -965,7 +978,7 @@ class Table {
 	}
 	
 	/**
-	 * Update the value of the col name on the row index with old value and new the new value
+	 * Update the value of the col name on the row index with new the new value
 	 * Return an array with success true if the update is done and with message to the error or the new value
 	 * @param $name the name of the column
 	 * @param $index the index field @see \DataTable\Table::parseIndex
@@ -973,7 +986,7 @@ class Table {
 	 * @param $new the new value
 	 * @return array
 	 */
-	public function updateData($name, $index, $old, $new) {
+	public function updateData($name, $index, $new) {
 		$index = $this->parseIndex($index);
 		$code = array("success" => true, "message" => "");
 		
@@ -990,7 +1003,7 @@ class Table {
 							
 							$code["success"] = true;
 							$temp = $this->prepareExecute($reqValue["requete"], $reqValue["parameters"])->offsetGet(0);
-							$code["message"] = $temp[0];
+							$code["message"] = $col->getBody($temp);
 						}
 						else {
 							$code["success"] = false;

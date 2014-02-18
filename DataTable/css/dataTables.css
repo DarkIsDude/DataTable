@@ -19,7 +19,7 @@
 	margin: 7px 10px;
 }
 
-.removeLine, .addLine {
+.removeLine, .addLine, .optionLine {
 	margin: 3px 7px;
 	margin-right: 10px;
 	margin-left: 0px;
@@ -27,8 +27,14 @@
 
 .removeLine.drag {
 	background-image: none;
-	background-color: rgba(141, 192, 219, 0.25);
-	border: 1px solid blue;
+	background-color: #ebccd1;
+	border: 1px solid #a94442;
+}
+
+.optionLine.drag {
+	background-image: none;
+	background-color: #bce8f1;
+	border: 1px solid #317091;
 }
 
 /* ********* */

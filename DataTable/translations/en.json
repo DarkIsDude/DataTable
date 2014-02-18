@@ -11,6 +11,7 @@
 	"sZeroRecords":    "No matching records found",
 	"sEmptyTable":     "No data available in table",
 	"sDragDrop":	   "Drag&Drop a row to delete it",
+	"sDragDropOption": "Drag&Drop a row to trigger it",
 	"oPaginate": {
 		"sFirst":      "First",
 		"sPrevious":   "Previous",

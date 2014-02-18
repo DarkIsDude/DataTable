@@ -58,9 +58,10 @@ class Col {
 	 * Return the value of the index
 	 * If this col is used for index, return the value of this col as index
 	 * @param array $data the data
+	 * @param boolean $force if true, return always the index
 	 * @return string
 	 */
-	public function getIndex($data) {
+	public function getIndex($data, $force = false) {
 		return '';
 	}
 	
