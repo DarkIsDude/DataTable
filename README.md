@@ -13,19 +13,3 @@ Vous pouvez lire la documentation ici: [Lire la documentation](https://github.co
 Un document expliquant l'architecture et la création: [Lire la documentation](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/report.pdf)
 
 La licence est disponible ici: [Lire la licence](https://github.com/doudou34/DataTable/blob/master/DataTable/resources/LICENCE.md)
-
-# A faire
-
-## Première partie
-
-- Rajouter une fonction addAllCols qui fait de l'introspection sur la table, sans paramètre elle ajoute toute les colonnes de la table
-
-## Deuxième partie
-
-- Rapport
-
--- Fin et relecture
-
-- Soutenance
-
--- 15 min de soutenance et 10 min de questions

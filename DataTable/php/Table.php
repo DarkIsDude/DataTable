@@ -21,6 +21,10 @@ class Table {
 	public static $PAGINATION_FULL_NUMBERS = "full_numbers";
 	public static $PAGINATION_NO = "";
 	
+	// Style of sort
+	public static $SORT_NATURAL = "natural";
+	public static $SORT_BASIC = "";
+	
 	// Language available
 	public static $FRANCAIS = "fr";
 	public static $ENGLISH = "en";
@@ -239,19 +243,19 @@ class Table {
 	}
 	
 	/**
-	 * Set option to enable or disable the sort on table
-	 * @param boolean $sort
-	 */
-	public function canSort($sort) {
-		$this->sort = $sort;
-	}
-	
-	/**
 	 * Set option to enable or disable the extension on table
 	 * @param boolean $extension
 	 */
 	public function canExtension($extension) {
 		$this->extension = $extension;
+	}
+	
+	/**
+	 * Set option to enable or disable the sort on table
+	 * @param string $paginate
+	 */
+	public function setSort($sort) {
+		$this->sort = $sort;
 	}
 	
 	/**
@@ -337,6 +341,23 @@ class Table {
 				$c = $col;
 		
 		return $c;
+	}
+	
+	/**
+	 * Add to this table all column in the database
+	 * The index will be show but not creatable
+	 */
+	public function addAllCols() {
+		$this->setConcreteDriver();
+		$requete = $this->concreteDriver->getAllColumn();
+		$response = $this->prepareExecute($requete['requete'], $requete['parameters']);
+		
+		foreach ($response as $aInfo) {
+			if ($this->concreteDriver->isIndex($aInfo))
+				$this->addColIndex(ucfirst($this->concreteDriver->getColumnName($aInfo)), $this->concreteDriver->getColumnName($aInfo), true, false);
+			else
+				$this->addCol(ucfirst($this->concreteDriver->getColumnName($aInfo)), $this->concreteDriver->getColumnName($aInfo));
+		}
 	}
 	
 	/**
@@ -528,13 +549,17 @@ class Table {
 	 * @param $name the name of the col that you want remove
 	 */
 	public function removeCol($name) {
-		$i = 0;
+		$i = $this->cols->getIterator();
+		$toDelete = array();
+		while ($i->valid()) {
+			if ($i->current()->name == $name)
+				$toDelete[] = $i->key();
+			$i->next();
+		}
 		
-		foreach ($this->cols as $col)
-			if ($col->name == $name)
-				$this->cols->offsetUnset($i);
-			else
-				$i++;
+		if (count($toDelete) > 0)
+			foreach ($toDelete as $delete)
+				$this->cols->offsetUnset($delete);
 	}
 		
 	/**
@@ -564,7 +589,7 @@ class Table {
 		$print = "";
 		
 		// Begining of the print
-		$print .= '<table extension="' . $this->extension . ' sortable="' . $this->sort . '" pagination="' . $this->paginate . '" identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
+		$print .= '<table extension="' . $this->extension . '" sortable="' . $this->sort . '" pagination="' . $this->paginate . '" identifier="' . $this->idSerialize . '" language="' . $this->language . '" link="' . $this->link . '" dataTable="' . $this->name . 'Table" create="' . $this->create . '" read="' . $this->read . '" update="' . $this->update . '" delete="' . $this->delete . '" width="100%">';
 		
 			// The head
 			$print .= '<thead>';
@@ -631,7 +656,7 @@ class Table {
 	 * Print the modal on the HTML format
 	 * @return string
 	 */
-	private function showModal() {
+	private function showModal() {		
 		$print = "";
 		
 		$print .= '<div class="modal fade" id="' . $this->name . 'Modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">';
@@ -775,7 +800,6 @@ class Table {
 			try {
 				$this->connect = new \PDO($this->driver . ':host=' . $this->url . ';dbname=' . $this->database . '', $this->login, $this->password);
 				$this->connect->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);// To have an exception if i can't exceute the query
-				$this->connect->exec("SET CHARACTER SET " . $this->encoding);
 			}
 			catch (\Exception $e) {
 				$this->connect = null;
@@ -789,7 +813,7 @@ class Table {
 	 * @param string $requete the requete
 	 * @param array $parameters the parameters of this requete (:.... in the requete)
 	 */
-	private function prepareExecute($requete, $parameters) {
+	public function prepareExecute($requete, $parameters) {
 		$this->connect();
 		$data = false;
 	
@@ -961,13 +985,17 @@ class Table {
 	
 		foreach ($allIndex as $aCSV) {
 			$aIndex = explode(':', $aCSV);
-			$name = $aIndex[0];
-			$value = $aIndex[1];
-			$indexCSV[$name] = $value;
-				
-			// Vérification que la colonne existe
-			$col = $this->getCol($name);
-			if ($col == null)
+			if (count($aIndex) == 2) {
+				$name = $aIndex[0];
+				$value = $aIndex[1];
+				$indexCSV[$name] = $value;
+					
+				// Vérification que la colonne existe
+				$col = $this->getCol($name);
+				if ($col == null)
+					$error = true;
+			}
+			else 
 				$error = true;
 		}
 	

@@ -1,4 +1,55 @@
 $(document).ready(function() {
+	// Add natural sort
+	function naturalSort (a, b) {
+		if(a=='-' && b != '-') return -1;
+		if(a=='-' && b == '-') return 0;
+		if(b=='-' && a != '-') return 1;
+	    var re = /(^-?[0-9]+(\.?[0-9]*)[df]?e?[0-9]?$|^0x[0-9a-f]+$|[0-9]+)/gi,
+	        sre = /(^[ ]*|[ ]*$)/g,
+	        dre = /(^([\w ]+,?[\w ]+)?[\w ]+,?[\w ]+\d+:\d+(:\d+)?[\w ]?|^\d{1,4}[\/\-]\d{1,4}[\/\-]\d{1,4}|^\w+, \w+ \d+, \d{4})/,
+	        hre = /^0x[0-9a-f]+$/i,
+	        ore = /^0/,
+	        // convert all to strings and trim()
+	        x = a.toString().replace(sre, '') || '',
+	        y = b.toString().replace(sre, '') || '',
+	        // chunk/tokenize
+	        xN = x.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+	        yN = y.replace(re, '\0$1\0').replace(/\0$/,'').replace(/^\0/,'').split('\0'),
+	        // numeric, hex or date detection
+	        xD = parseInt(x.match(hre)) || (xN.length != 1 && x.match(dre) && Date.parse(x)),
+	        yD = parseInt(y.match(hre)) || xD && y.match(dre) && Date.parse(y) || null;
+	    // first try and sort Hex codes or Dates
+	    if (yD)
+	        if ( xD < yD ) return -1;
+	        else if ( xD > yD )  return 1;
+	    // natural sorting through split numeric strings and default strings
+	    for(var cLoc=0, numS=Math.max(xN.length, yN.length); cLoc < numS; cLoc++) {
+	        // find floats not starting with '0', string or 0 if not defined (Clint Priest)
+	        var oFxNcL = !(xN[cLoc] || '').match(ore) && parseFloat(xN[cLoc]) || xN[cLoc] || 0;
+	        var oFyNcL = !(yN[cLoc] || '').match(ore) && parseFloat(yN[cLoc]) || yN[cLoc] || 0;
+	        // handle numeric vs string comparison - number < string - (Kyle Adams)
+	        if (isNaN(oFxNcL) !== isNaN(oFyNcL)) return (isNaN(oFxNcL)) ? 1 : -1;
+	        // rely on string comparison if different types - i.e. '02' < 2 != '02' < '2'
+	        else if (typeof oFxNcL !== typeof oFyNcL) {
+	            oFxNcL += '';
+	            oFyNcL += '';
+	        }
+	        if (oFxNcL < oFyNcL) return -1;
+	        if (oFxNcL > oFyNcL) return 1;
+	    }
+	    return 0;
+	}
+	 
+	jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+	    "natural-asc": function ( a, b ) {
+	        return naturalSort(a,b);
+	    },
+	    "natural-desc": function ( a, b ) {
+	        return naturalSort(a,b) * -1;
+	    }
+	} );
+	
+	
 	$('table[dataTable]').dataTablePlus();
 });
 
@@ -23,56 +74,73 @@ $(document).ready(function() {
 		
 		// Init everithing
 		this.init = function () {
-			var urlLanguage = this.attr("link") + "translations/" + this.attr("language") + ".json";
 			var root = this;
+			var options = {
+		        "bLengthChange": true,
+		        "bInfo": true,
+		        "bAutoWidth": true,
+		        "bJQueryUI": true,
+		        "bStateSave": true,
+		        "bFilter": true
+			};
+			
+			// When I leave the page
+			$(window).unload("beforeunload", function() {
+				root.send($(this), {"id" : root.attr("identifier"), "function" : "removeSerialized"}, function(response) {}, false);
+			});
+			
+			// For pagination
+			options["bPaginate"] = true;
+			if (root.attr("pagination"))
+				options["sPaginationType"] = root.attr("pagination");
+			else
+				options["bPaginate"] = false;
+			
+			// Sort
+			options["bSort"] = root.attr("sortable");
+			if (options["bSort"] == "natural") {
+				options["aoColumnDefs"] = new Array();
+				var i = 0;
+				this.find('th').each(function() {
+					options["aoColumnDefs"][i] = {
+						"sType" : "natural",
+						"aTargets" : [i]
+					};
+					i++;
+				})
+			}
+			
+			// End function
+			options["fnInitComplete"] = function(oSettings, jsonUseless) {
+	        	this.name = this.attr("table");
+	        	
+				this.div = this.parent();
+				this.modal = this.div.next();
+				this.canUpdate = this.attr("update");
+				this.canDelete = this.attr("delete");
+				this.canCreate = this.attr("create");
+				this.canExtension = this.attr("extension")
+				
+				this.initParent();
+				this.initDragDrop();
+				this.setBootstrap();
+				
+				if (this.canUpdate)
+					this.updatable();
+				if (this.canDelete)
+					this.deletable();
+				if (this.canCreate)
+					this.creatable();
+				if (this.canExtension)
+					this.extension();
+			};
+			
+			// Language
+			var urlLanguage = this.attr("link") + "translations/" + this.attr("language") + ".json";
+			
+			// Launch
 			$.getJSON(urlLanguage, null, function(json) {
-				var options = {
-			        "bLengthChange": true,
-			        "bInfo": true,
-			        "bAutoWidth": true,
-			        "bJQueryUI": true,
-			        "bStateSave": true,
-			        
-			        "bFilter": true,
-			        "bSort": root.attr("sortable"),
-			        "fnInitComplete": function(oSettings, jsonUseless) {
-			        	this.name = this.attr("table");
-			        	this.language = json;
-			        	
-						this.div = this.parent();
-						this.modal = this.div.next();
-						this.canUpdate = this.attr("update");
-						this.canDelete = this.attr("delete");
-						this.canCreate = this.attr("create");
-						this.canExtension = this.attr("extension")
-						
-						this.initParent();
-						this.initDragDrop();
-						this.setBootstrap();
-						
-						if (this.canUpdate)
-							this.updatable();
-						if (this.canDelete)
-							this.deletable();
-						if (this.canCreate)
-							this.creatable();
-						if (this.canExtension)
-							this.extension();
-						
-						// When I leave the page
-						$(window).unload("beforeunload", function() {
-							root.send($(this), {"id" : root.attr("identifier"), "function" : "removeSerialized"}, function(response) {}, false);
-						});
-			        }
-				};
-				
-				// For pagination
-				options["bPaginate"] = true;
-				if (root.attr("pagination"))
-					options["sPaginationType"] = root.attr("pagination");
-				else
-					options["bPaginate"] = false;
-				
+				root.language = json;
 				root.dataTable(options);
 			});
 			bInitHandedOff = true;

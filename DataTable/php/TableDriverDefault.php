@@ -21,6 +21,17 @@ class TableDriverDefault extends TableDriver {
 	
 	/**
 	 * (non-PHPdoc)
+	 * @see \DataTable\TableDriver::getAllColumn()
+	 */
+	public function getAllColumn() {
+		$requete['requete'] = 'SELECT COLUMN_NAME, COLUMN_KEY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=:name AND TABLE_SCHEMA=:schema;';
+		$requete['parameters'] = array("name" => $this->getTable()->name, "schema" => $this->getTable()->database);
+		
+		return $requete;
+	}
+	
+	/**
+	 * (non-PHPdoc)
 	 * @see \DataTable\TableDriver::setTable()
 	 */
 	public function setTable($table) {
@@ -57,5 +68,13 @@ class TableDriverDefault extends TableDriver {
 	 */
 	public function getColumnLength($aRow) {
 		return $aRow['CHARACTER_MAXIMUM_LENGTH'];
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see \DataTable\TableDriver::isIndex()
+	 */
+	public function isIndex($aRow) {
+		return $aRow['COLUMN_KEY'] == 'PRI';
 	}
 }

@@ -13,6 +13,12 @@ abstract class TableDriver {
 	public abstract function getSQL();
 	
 	/**
+	 * Call this function to have all function
+	 * @return array the SQL function
+	 */
+	public abstract function getAllColumn();
+	
+	/**
 	 * Set the table of this class
 	 * @param unknown $table
 	 */
@@ -41,4 +47,11 @@ abstract class TableDriver {
 	 * @param unknown $aRow
 	 */
 	public abstract function getColumnLength($aRow);
+	
+	/**
+	 * Call this function to know if aRow is index of table
+	 * @param unknown $aRow
+	 * @return boolean
+	 */
+	public abstract function isIndex($aRow);
 }
