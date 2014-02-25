@@ -141,6 +141,7 @@ $(document).ready(function() {
 			// Launch
 			$.getJSON(urlLanguage, null, function(json) {
 				root.language = json;
+				options["oLanguage"] = json;
 				root.dataTable(options);
 			});
 			bInitHandedOff = true;

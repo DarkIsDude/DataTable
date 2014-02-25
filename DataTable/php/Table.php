@@ -35,7 +35,7 @@ class Table {
 	protected static $BDD_PASSWORD = "";
 	protected static $BDD_DATABASE = "pfe";
 	protected static $BDD_DRIVER = "mysql";
-	protected static $LANGUAGE = "en";
+	protected static $LANGUAGE = "fr";
 	protected static $ENCODING = "utf8";
 
 	// Database parameters
